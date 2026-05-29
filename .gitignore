@@ -1,0 +1,15 @@
+# OpenFOAM mesh and results (too large for git)
+constant/polyMesh/
+processor*/
+postProcessing/
+[1-9]*/
+[1-9][0-9]*/
+*.foam
+*.log
+
+# Python
+__pycache__/
+*.pyc
+
+# System
+.DS_Store
