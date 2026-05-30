@@ -6,9 +6,11 @@ gmsh.initialize()
 gmsh.model.add("naca0012_wing")
 geo = gmsh.model.occ
 
+inches = 0.0254
+
 # ── STEP 1: Profile parameters ─────────────────────────────────────────────
-chord    = 48.0   # inches
-te_half  = 0.05   # half of 0.100" blunt trailing edge (inches)
+chord    = 48.0 * inches  # inches
+te_half  = 0.05 * inches  # half of 0.100" blunt trailing edge (inches)
 n_points = 100    # points per surface (cosine-spaced)
 
 # Cosine spacing: denser near LE and TE, coarser in the middle
@@ -47,9 +49,9 @@ xc_trunc = np.append(xc_trunc, 1.0)
 yc_trunc = np.append(yc_trunc, te_thresh)
 
 # ── STEP 3: Add 2D profile points to gmsh ─────────────────────────────────
-lc_body = 1.0	# generate surface mesh size (inches) - tune during meshing 
-lc_le = 0.1 # finer at leading edge (high curvature)
-lc_te = 0.05 # finest at trailing edge (blunt face, thin boundary layer)
+lc_body = 1.0 * inches	# generate surface mesh size (inches) - tune during meshing 
+lc_le = 0.1 * inches # finer at leading edge (high curvature)
+lc_te = 0.05 * inches # finest at trailing edge (blunt face, thin boundary layer)
 
 # leading edge - single shared point (upper and lower surface meet here)
 le_tag = geo.addPoint(0.0, 0.0, 0.0, lc_le)
@@ -89,7 +91,7 @@ profile_surface = geo.addPlaneSurface([profile_loop])
 # The constant-chord section runs from z=0 (root/symmetry plane) to z=33.12"
 # Refer to notes.md
 
-z_straight = 33.12 # inches
+z_straight = 33.12 * inches # inches
 
 extrusion = geo.extrude(
 	[(2, profile_surface)],
@@ -105,17 +107,29 @@ tip_face = extrusion[0] #geo.extrude returns the face swept along the side for [
 # The tip face (at z=33.12) gets revolved 180° around the chord line
 # Chord line at z=33.12: runs along x-axis, at y=0
 
+upper_tip_tags = []
+for i in range(len(xc_trunc)):
+	tag = geo.addPoint(
+		xc_trunc[i] * chord,
+		yc_trunc[i] * chord,
+		z_straight,
+		lc_body
+	)
+	upper_tip_tags.append(tag)
+	
+upper_tip_spline = geo.addSpline(upper_tip_tags)
+
 geo.revolve(
-	[tip_face], # surface to revolve
+	[(1, upper_tip_spline)], # surface to revolve
 	0, 0, z_straight, # origin of surface to revolve
 	1, 0, 0, # along X axis (also the chord)
-	math.pi
+	math.pi # 180 degrees
 )
 
 # ── STEP 8: Synchronize and export ──────────────────────────
 geo.synchronize()
 
-gmsh.write("geometry/wing.stl")
+gmsh.write("wing.stl")
 gmsh.finalize()
 
 
