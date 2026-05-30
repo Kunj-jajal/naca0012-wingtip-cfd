@@ -8,3 +8,7 @@
 
 ## Tool
 gmsh Python API → STL export → snappyHexMesh
+
+## Approach
+Creating profile from 0 to 1 in 2D and multiplying coordinates by 48 (inches) to get the full profile. (refer to generate_wing.py)
+Extrusion in Z direction up to (36 - (maximum_length/2)) followed by a revolve extrusion about the chord length to get a rounded tip.
