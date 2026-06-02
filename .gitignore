@@ -6,6 +6,8 @@ OpenFOAM/[1-9]*/
 OpenFOAM/[1-9][0-9]*/
 OpenFOAM/*.foam
 OpenFOAM/*.log
+OpenFOAM/constant/extendedFeatureEdgeMesh/
+OpenFOAM/constant/triSurface/wing.eMesh
 
 # Python
 __pycache__/
