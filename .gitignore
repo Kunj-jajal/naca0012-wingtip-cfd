@@ -1,11 +1,11 @@
-# OpenFOAM mesh and results (too large for git)
-constant/polyMesh/
-processor*/
-postProcessing/
-[1-9]*/
-[1-9][0-9]*/
-*.foam
-*.log
+# OpenFOAM mesh and results
+OpenFOAM/constant/polyMesh/
+OpenFOAM/processor*/
+OpenFOAM/postProcessing/
+OpenFOAM/[1-9]*/
+OpenFOAM/[1-9][0-9]*/
+OpenFOAM/*.foam
+OpenFOAM/*.log
 
 # Python
 __pycache__/
