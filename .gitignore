@@ -11,6 +11,7 @@ OpenFOAM/constant/triSurface/wing.eMesh
 OpenFOAM/0/polyMesh/
 OpenFOAM/0/pointLevel
 OpenFOAM/0/cellLevel
+OpenFOAM/log.*
 
 # Python
 __pycache__/
