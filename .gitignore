@@ -12,6 +12,7 @@ OpenFOAM/0/polyMesh/
 OpenFOAM/0/pointLevel
 OpenFOAM/0/cellLevel
 OpenFOAM/log.*
+OpenFOAM/dynamicCode/
 
 # Python
 __pycache__/
