@@ -91,7 +91,7 @@ castellatedMeshControls
     (
         {
             file "wing.eMesh";
-            level 4;
+            level 3;
         }
     );
 
@@ -111,7 +111,7 @@ castellatedMeshControls
         wing
         {
             // Surface-wise min and max refinement level
-            level (4 4);
+            level (3 4);
             
         }
     }
@@ -140,7 +140,7 @@ castellatedMeshControls
         refinementBox
         {
             mode inside;
-            levels ((1E15 4));
+            levels ((1E15 3));
         }
     }
 
@@ -153,7 +153,7 @@ castellatedMeshControls
     // section reachable from the locationInMesh is kept.
     // NOTE: This point should never be on a face, always inside a cell, even
     // after refinement.
-    locationInMesh (-2.4384 0.0 0.6096);
+    locationInMesh (-1.2192 0.0 0.6096);
 
 
     // Whether any faceZones (as specified in the refinementSurfaces)
@@ -207,14 +207,14 @@ addLayersControls
 {
     // Are the thickness parameters below relative to the undistorted
     // size of the refined cell outside layer (true) or absolute sizes (false).
-    relativeSizes true;
+    relativeSizes false;
 
     // Per final patch (so not geometry!) the layer information
     layers
     {
         "wing.*"
         {
-            nSurfaceLayers 10;
+            nSurfaceLayers 5;
         }
     }
 
@@ -307,27 +307,34 @@ meshQualityControls
 debugFlags
 (
 	// write intermediate meshes
-	mesh
+	//mesh
+	
 	// write current mesh intersections as .obj files
-	intersections
+	//intersections
+	
 	// write information about explicit feature edge
 	// refinement
-	featureSeeds
+	//featureSeeds
+	
 	// write attraction as .obj files
-	attraction
+	//attraction
+	
 	// write information about layers
-	layerInfo
+	//layerInfo
+	
 );
 
 writeFlags
 (
 	// write volScalarField with cellLevel for
 	// postprocessing
-	scalarLevels
+	//scalarLevels
+	
 	// write cellSets, faceSets of faces in layer
-	layerSets
+	//layerSets
+	
 	// write volScalarField for layer coverage
-	layerFields
+	//layerFields
 );
 
 // Merge tolerance. Is fraction of overall bounding box of initial mesh.
