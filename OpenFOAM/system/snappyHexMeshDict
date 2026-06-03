@@ -28,17 +28,17 @@ addLayers       true;
 // - to 'snap' the mesh boundary to the surface
 geometry
 {
-    motorBike.obj
+    wing.stl
     {
         type triSurfaceMesh;
-        name motorBike;
+        name wing;
     }
 
     refinementBox
     {
         type box;
-        min  (-1.0 -0.7 0.0);
-        max  ( 8.0  0.7 2.5);
+        min  (-0.4064 -0.3048 0.0  );
+        max  ( 1.6256  0.3048 1.016);
     }
 }
 
@@ -78,7 +78,7 @@ castellatedMeshControls
     // Number of buffer layers between different levels.
     // 1 means normal 2:1 refinement restriction, larger means slower
     // refinement.
-    nCellsBetweenLevels 3;
+    nCellsBetweenLevels 1;
 
 
 
@@ -90,8 +90,8 @@ castellatedMeshControls
     features
     (
         {
-            file "motorBike.eMesh";
-            level 6;
+            file "wing.eMesh";
+            level 4;
         }
     );
 
@@ -108,23 +108,18 @@ castellatedMeshControls
 
     refinementSurfaces
     {
-        motorBike
+        wing
         {
             // Surface-wise min and max refinement level
-            level (5 6);
-
-            // Optional specification of patch type (default is wall). No
-            // constraint types (cyclic, symmetry) etc. are allowed.
-            patchInfo
-            {
-                type wall;
-                inGroups (motorBikeGroup);
-            }
+            level (4 4);
+            
         }
     }
 
     // Resolve sharp angles
     resolveFeatureAngle 30;
+    
+    planarAngle 30;
 
 
     // Region-wise refinement
@@ -158,7 +153,7 @@ castellatedMeshControls
     // section reachable from the locationInMesh is kept.
     // NOTE: This point should never be on a face, always inside a cell, even
     // after refinement.
-    locationInMesh (3.0001 3.0001 0.43);
+    locationInMesh (-2.4384 0.0 0.6096);
 
 
     // Whether any faceZones (as specified in the refinementSurfaces)
@@ -182,17 +177,17 @@ snapControls
     tolerance 2.0;
 
     //- Number of mesh displacement relaxation iterations.
-    nSolveIter 30;
+    nSolveIter 50;
 
     //- Maximum number of snapping relaxation iterations. Should stop
     //  before upon reaching a correct mesh.
-    nRelaxIter 5;
+    nRelaxIter 10;
 
     // Feature snapping
 
         //- Number of feature edge snapping iterations.
         //  Leave out altogether to disable.
-        nFeatureSnapIter 10;
+        nFeatureSnapIter 20;
 
         //- Detect (geometric only) features by sampling the surface
         //  (default=false).
@@ -217,25 +212,25 @@ addLayersControls
     // Per final patch (so not geometry!) the layer information
     layers
     {
-        "(lowerWall|motorBike).*"
+        "wing.*"
         {
-            nSurfaceLayers 1;
+            nSurfaceLayers 10;
         }
     }
 
     // Expansion factor for layer mesh
-    expansionRatio 1.0;
+    expansionRatio 1.2;
 
     // Wanted thickness of final added cell layer. If multiple layers
     // is the thickness of the layer furthest away from the wall.
     // Relative to undistorted size of cell outside layer.
     // See relativeSizes parameter.
-    finalLayerThickness 0.3;
+    firstLayerThickness 3.8e-4;
 
     // Minimum thickness of cell layer. If for any reason layer
     // cannot be above minThickness do not add layer.
     // Relative to undistorted size of cell outside layer.
-    minThickness 0.1;
+    minThickness 3.8e-5;
 
     // If points get not extruded do nGrow layers of connected faces that are
     // also not grown. This helps convergence of the layer addition process
@@ -247,7 +242,7 @@ addLayersControls
 
     // When not to extrude surface. 0 is flat surface, 90 is when two faces
     // are perpendicular
-    featureAngle 60;
+    featureAngle 130;
 
     // At non-patched sides allow mesh to slip if extrusion direction makes
     // angle larger than slipFeatureAngle.
@@ -255,7 +250,7 @@ addLayersControls
 
     // Maximum number of snapping relaxation iterations. Should stop
     // before upon reaching a correct mesh.
-    nRelaxIter 3;
+    nRelaxIter 5;
 
     // Number of smoothing iterations of surface normals
     nSmoothSurfaceNormals 1;
@@ -309,14 +304,31 @@ meshQualityControls
 
 // Advanced
 
-// Write flags
-writeFlags
+debugFlags
 (
-    scalarLevels
-    layerSets
-    layerFields     // write volScalarField for layer coverage
+	// write intermediate meshes
+	mesh
+	// write current mesh intersections as .obj files
+	intersections
+	// write information about explicit feature edge
+	// refinement
+	featureSeeds
+	// write attraction as .obj files
+	attraction
+	// write information about layers
+	layerInfo
 );
 
+writeFlags
+(
+	// write volScalarField with cellLevel for
+	// postprocessing
+	scalarLevels
+	// write cellSets, faceSets of faces in layer
+	layerSets
+	// write volScalarField for layer coverage
+	layerFields
+);
 
 // Merge tolerance. Is fraction of overall bounding box of initial mesh.
 // Note: the write tolerance needs to be higher than this.
