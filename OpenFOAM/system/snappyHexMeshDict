@@ -91,7 +91,7 @@ castellatedMeshControls
     (
         {
             file "wing.eMesh";
-            level 3;
+            level 4;
         }
     );
 
@@ -111,7 +111,7 @@ castellatedMeshControls
         wing
         {
             // Surface-wise min and max refinement level
-            level (3 4);
+            level (4 5);
             
         }
     }
@@ -140,7 +140,7 @@ castellatedMeshControls
         refinementBox
         {
             mode inside;
-            levels ((1E15 3));
+            levels ((1E15 4));
         }
     }
 
@@ -214,7 +214,7 @@ addLayersControls
     {
         "wing.*"
         {
-            nSurfaceLayers 5;
+            nSurfaceLayers 10;
         }
     }
 
