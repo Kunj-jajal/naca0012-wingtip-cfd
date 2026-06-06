@@ -126,10 +126,28 @@ geo.revolve(
 	math.pi # 180 degrees
 )
 
-# ── STEP 8: Synchronize and export ──────────────────────────
-geo.synchronize()
+# ── STEP 8: Rotate to AOA=10° (nose up) pivoting about the quarter-chord ────
+# Rotating about z-axis through QC rather than global origin keeps QC fixed,
+# so the subsequent translate is just a single clean shift.
 
+AOA_RAD = math.radians(10.0)
+qc_x    = 0.25 * chord
+
+geo.synchronize()                        # needed before getEntities()
+all_ents = gmsh.model.getEntities()
+
+geo.rotate(all_ents,
+           qc_x, 0, 0,    # point on the rotation axis (QC)
+           0, 0, 1,        # axis direction (+z = spanwise)
+           -AOA_RAD)       # negative = clockwise = nose UP when viewed from +z
+
+# ── STEP 9: Translate QC to global origin ───────────────────────────────────
+# QC is still at (qc_x, 0, 0) since rotation pivoted about it — just shift it.
+
+geo.translate(all_ents, -qc_x, 0, 0)
+
+# ── STEP 10: Synchronize and export ─────────────────────────────────────────
+geo.synchronize()
 gmsh.write("wing.stl")
 gmsh.finalize()
-
 
