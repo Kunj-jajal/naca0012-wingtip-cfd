@@ -16,42 +16,48 @@ FoamFile
 
 dimensions      [0 2 -2 0 0 0 0];
 
-internalField   uniform 3.75e-07;
+
+internalField   uniform 0.00906153;
 
 boundaryField
 {
     inlet
     {
         type            fixedValue;
-        value           $internalField;
+        value           uniform 0.00906153;
     }
 
     outlet
     {
         type            inletOutlet;
-        inletValue      $internalField;
-        value           $internalField;
+        inletValue      uniform 0.00906153;
+        value           uniform 0.00906153;
     }
 
     top
     {
-        type            symmetryPlane;
+        type            zeroGradient;
     }
 
-    "(symUp|symDown)"
+    bottom
+    {
+        type            zeroGradient;
+    }
+
+    back
     {
         type            symmetryPlane;
     }
 
-    bump
+    front
+    {
+        type            zeroGradient;
+    }
+
+    wing
     {
         type            kqRWallFunction;
-        value           $internalField;
-    }
-
-    frontAndBack
-    {
-        type            empty;
+        value           uniform 0.00906153;
     }
 }
 

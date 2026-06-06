@@ -28,27 +28,32 @@ boundaryField
     outlet
     {
         type            fixedValue;
-        value           $internalField;
+        value           uniform 0;
     }
 
     top
     {
-        type            symmetryPlane;
+        type            zeroGradient;
     }
 
-    "(symUp|symDown)"
-    {
-        type            symmetryPlane;
-    }
-
-    bump
+    bottom
     {
         type            zeroGradient;
     }
 
-    frontAndBack
+    wing
     {
-        type            empty;
+        type            zeroGradient;
+    }
+
+    front
+    {
+        type            zeroGradient;
+    }
+    
+    back
+    {
+        type            symmetryPlane;
     }
 }
 
