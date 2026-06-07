@@ -1,15 +1,16 @@
 /*--------------------------------*- C++ -*----------------------------------*\
-| =========                 |                                                 |
-| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
-|  \\    /   O peration     | Version:  v2306                                 |
-|   \\  /    A nd           | Website:  www.openfoam.com                      |
-|    \\/     M anipulation  |                                                 |
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     |
+    \\  /    A nd           | www.openfoam.com
+     \\/     M anipulation  |
 \*---------------------------------------------------------------------------*/
 FoamFile
 {
     version     2.0;
     format      ascii;
     class       dictionary;
+    location    "system";
     object      fvSchemes;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
@@ -22,17 +23,26 @@ ddtSchemes
 gradSchemes
 {
     default         Gauss linear;
+    grad(U)         cellLimited Gauss linear 1;
+    grad(k)         cellLimited Gauss linear 1;
+    grad(omega)     cellLimited Gauss linear 1;
+    grad(epsilon)   cellLimited Gauss linear 1;
 }
 
 divSchemes
 {
-    
-    
+    default         none;
+
     div(phi,U)      Gauss linearUpwind grad(U);
-    div(phi,k)      Gauss upwind;
-    div(phi,omega)  Gauss upwind;
-    div((nuEff*dev2(T(grad(U))))) Gauss linear;
-    
+
+    // Turbulence
+    div(phi,k)      Gauss linearUpwind grad(k);
+    div(phi,omega)  Gauss linearUpwind grad(omega);
+    div(phi,epsilon) Gauss linearUpwind grad(epsilon);
+
+    // Required for compressible / nut output
+    div((nuEff*dev(T(grad(U))))) Gauss linear;
+    div((nu+nut)*dev(T(grad(U)))) Gauss linear;
 }
 
 laplacianSchemes
@@ -47,12 +57,12 @@ interpolationSchemes
 
 snGradSchemes
 {
-    default         uncorrected;
+    default         corrected;
 }
 
 wallDist
 {
-    method meshWave;
+    method          meshWave;
 }
 
 // ************************************************************************* //

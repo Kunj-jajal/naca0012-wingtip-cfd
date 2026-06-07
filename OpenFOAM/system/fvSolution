@@ -1,15 +1,16 @@
 /*--------------------------------*- C++ -*----------------------------------*\
-| =========                 |                                                 |
-| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
-|  \\    /   O peration     | Version:  v2306                                 |
-|   \\  /    A nd           | Website:  www.openfoam.com                      |
-|    \\/     M anipulation  |                                                 |
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     |
+    \\  /    A nd           | www.openfoam.com
+     \\/     M anipulation  |
 \*---------------------------------------------------------------------------*/
 FoamFile
 {
     version     2.0;
     format      ascii;
     class       dictionary;
+    location    "system";
     object      fvSolution;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
@@ -18,10 +19,10 @@ solvers
 {
     p
     {
-        solver          PCG;
-        preconditioner  DIC;
+        solver          GAMG;
+        smoother        GaussSeidel;
         tolerance       1e-6;
-        relTol          0.01;
+        relTol          0.1;
     }
 
     pFinal
@@ -30,7 +31,7 @@ solvers
         relTol          0;
     }
 
-    U
+    "(U|k|omega|epsilon)"
     {
         solver          smoothSolver;
         smoother        symGaussSeidel;
@@ -38,57 +39,26 @@ solvers
         relTol          0.1;
     }
 
-    UFinal
+    "(U|k|omega|epsilon)Final"
     {
         $U;
         relTol          0;
     }
-
-    omega
-    {
-        solver          smoothSolver;
-        smoother        symGaussSeidel;
-        tolerance       1e-8;
-        relTol          0.1;
-    }
-
-    omegaFinal
-    {
-        $omega;
-        relTol          0;
-    }
-
-    k
-    {
-        solver          smoothSolver;
-        smoother        symGaussSeidel;
-        tolerance       1e-8;
-        relTol          0.1;
-    }
-
-    kFinal
-    {
-        $k;
-        relTol          0;
-    }
-
-    nut
-    {
-        solver          smoothSolver;
-        smoother        symGaussSeidel;
-        tolerance       1e-8;
-        relTol          0.1;
-    }
 }
-
 
 PIMPLE
 {
-    correctPhi          yes;
-    nOuterCorrectors    3;
-    nCorrectors         1;
-    nNonOrthogonalCorrectors 3;
-    
+    nOuterCorrectors        2;
+    nCorrectors             2;
+    nNonOrthogonalCorrectors 1;
+
+    // Residual-based outer loop control (optional but recommended)
+    // Uncomment to exit outer correctors early once converged
+    // outerCorrectorResidualControl
+    // {
+    //     U    { tolerance 1e-4; relTol 0; }
+    //     p    { tolerance 1e-4; relTol 0; }
+    // }
 }
 
 relaxationFactors
@@ -97,15 +67,13 @@ relaxationFactors
     {
         p               0.3;
     }
-
     equations
     {
-        "U.*"           0.5;
-        "k.*"           0.5;
-        "omega.*"       0.5;
+        U               0.7;
+        k               0.7;
+        omega           0.7;
+        epsilon         0.7;
     }
 }
-
-
 
 // ************************************************************************* //
