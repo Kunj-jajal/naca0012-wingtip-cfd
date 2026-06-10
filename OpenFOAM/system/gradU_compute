@@ -1,0 +1,13 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  gradU_compute — computes grad(U) and writes it to the time directory
+\*---------------------------------------------------------------------------*/
+gradU_compute
+{
+    type            grad;
+    libs            (fieldFunctionObjects);
+ 
+    field           U;
+ 
+    writeControl    timeStep;
+    writeInterval   1;
+}
