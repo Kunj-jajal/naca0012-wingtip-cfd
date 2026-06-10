@@ -99,7 +99,7 @@ boundary
     
     back
     {
-        type        patch;
+        type        symmetryPlane;
         faces
         (
             (0 3 2 1)

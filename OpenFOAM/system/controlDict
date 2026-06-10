@@ -24,13 +24,13 @@ startTime       0;
 
 stopAt          endTime;
 
-endTime         100;                 
+endTime         10;                 
 
 deltaT          1e-3;               
 
-writeControl    timeStep;
+writeControl    runTime;
 
-writeInterval   0.1;                
+writeInterval   0.01;                
 
 purgeWrite      0;                  
 
@@ -46,7 +46,7 @@ timePrecision   6;
 
 adjustTimeStep  no;
 
-maxCo           0.9;
+maxCo           1;
 
 maxDeltaT       1e-2;
 
@@ -55,11 +55,11 @@ functions
 
     QCriterion
     {
-        type            QCriterion;
+        type            Q;
         libs            (fieldFunctionObjects);
         
         writeControl    writeTime;
-        log             True;
+        log             on;
     }
 
     vorticity
@@ -68,7 +68,7 @@ functions
         libs            (fieldFunctionObjects);
         writeControl    writeTime;
         writeFields     yes;
-        log             True;
+        log             on;
     }
 
     CpStatic
@@ -89,7 +89,7 @@ functions
 
         result          CpStatic;   
         writeControl    writeTime;
-        log             no;
+        log             off;
     }
 
     CpTotal
@@ -110,7 +110,7 @@ functions
 
         result          CpTotal;
         writeControl    writeTime;
-        log             no;
+        log             off;
     }
 
     // ── Probe / sample locations ──────────────────────────────────────────

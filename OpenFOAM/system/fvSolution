@@ -50,7 +50,7 @@ PIMPLE
 {
     nOuterCorrectors        2;
     nCorrectors             2;
-    nNonOrthogonalCorrectors 1;
+    nNonOrthogonalCorrectors 2;
 
     // Residual-based outer loop control (optional but recommended)
     // Uncomment to exit outer correctors early once converged

@@ -1,0 +1,10 @@
+gradU_compute
+{
+    type            grad;
+    libs            (fieldFunctionObjects);
+
+    field           U;
+
+    writeControl    timeStep;
+    writeInterval   1;
+}
