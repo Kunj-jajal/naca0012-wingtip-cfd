@@ -4,6 +4,8 @@ OpenFOAM/processor*/
 OpenFOAM/postProcessing/
 OpenFOAM/[1-9]*/
 OpenFOAM/[1-9][0-9]*/
+OpenFOAM/0.*
+OpenFOAM/0.*/
 OpenFOAM/*.foam
 OpenFOAM/*.log
 OpenFOAM/constant/extendedFeatureEdgeMesh/
