@@ -354,7 +354,7 @@ Full per-plane metrics tables will be available in `scripts/results/metrics_b11.
 
 | | | |
 |---|---|---|
-| ![Vortex view 1](OpenFOAM/photos/vortex.png) | ![Vortex view 2](OpenFOAM/photos/vortex1.png) | ![Vortex view 3](OpenFOAM/photos/vortex2.png) |
+| ![Vortex view 1](OpenFOAM/photos/vortex.png) | ![Vortex view 2](OpenFOAM/photos/vortex2.png) | ![Vortex view 3](OpenFOAM/photos/vortex3.png) |
 
 *Three views of the wingtip vortex roll-up and downstream development.*
 
