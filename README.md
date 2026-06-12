@@ -9,7 +9,7 @@ Numerical simulation of the near-field wingtip vortex flow over a half-span **NA
 
 ## Table of Contents
 
-- [How to Run This Case] (#how-to-run-this-case)
+- [How to Run This Case](#how-to-run-this-case)
 - [Case Overview](#case-overview)
 - [Geometry](#geometry)
 - [Flow Conditions](#flow-conditions)
@@ -333,7 +333,7 @@ Crossflow velocity components (`v`, `w`) show higher RMSE than the axial compone
 
 | Plot | Description |
 |---|---|
-| ![Cp static at core](scripts/results/plots/cp_static_core.png) | **Static pressure coefficient at vortex core vs x/c** — CFD plateaus while experiment shows a deepening suction peak downstream. |
+| ![Cp static at core](scripts/results/plots/cp_static_core.png) | **Static pressure coefficient at vortex core vs x/c** — CFD predicts a much weaker vortex core (Cp ≈ -1.8) compared to experiment (Cp ≈ -3.5), indicating underprediction of suction strength. |
 | ![Core y-location](scripts/results/plots/core_y_location.png) | **Vortex core centerline, y/c vs x/c** — close agreement in vertical core position. |
 | ![Core z-location](scripts/results/plots/core_z_location.png) | **Vortex core centerline, z/c vs x/c** — close agreement in spanwise core position. |
 | ![Velocity magnitude at core](scripts/results/plots/vmag_core.png) | **Velocity magnitude at vortex core vs x/c** — CFD underpredicts the peak swirl/axial velocity excess downstream. |
