@@ -17,6 +17,7 @@ Numerical simulation of the near-field wingtip vortex flow over a half-span **NA
 - [Experimental Data Files](#experimental-data-files)
 - [Post-Processing & Validation](#post-processing--validation)
 - [Results](#results)
+- [Gallery](#gallery)
 - [Repository Structure](#repository-structure)
 - [License](#license)
 
@@ -342,6 +343,21 @@ Full per-plane metrics tables will be available in `scripts/results/metrics_b11.
 
 > **Summary:** the simulation correctly captures vortex *location* but underpredicts vortex *strength* downstream — a known limitation of k-ω SST (and RANS models generally) for tip-vortex flows. Improving this would require a Reynolds-stress model, hybrid RANS-LES, or full LES/DES.
 
+## Gallery
+
+### Mesh
+
+![Mesh](OpenFOAM/photos/mesh.png)
+*snappyHexMesh refinement around the wing and wingtip region.*
+
+### Vortex Formation
+
+| | | |
+|---|---|---|
+| ![Vortex view 1](OpenFOAM/photos/vortex.png) | ![Vortex view 2](OpenFOAM/photos/vortex1.png) | ![Vortex view 3](OpenFOAM/photos/vortex2.png) |
+
+*Three views of the wingtip vortex roll-up and downstream development.*
+
 ---
 
 ## Repository Structure
@@ -351,6 +367,7 @@ naca-wingtip-cfd
 ├── geometry/
 │   └── generate_wing.py              # Parametric wing geometry generation
 ├── OpenFOAM/
+│   ├── photos/						  # Photos from paraView
 │   ├── 0/
 │   │   ├── U
 │   │   ├── p
