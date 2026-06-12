@@ -9,13 +9,69 @@ Numerical simulation of the near-field wingtip vortex flow over a half-span **NA
 
 ## Table of Contents
 
+- [How to Run This Case] (#how-to-run-this-case)
 - [Case Overview](#case-overview)
 - [Geometry](#geometry)
 - [Flow Conditions](#flow-conditions)
 - [Turbulence Model & Initial Conditions](#turbulence-model--initial-conditions)
 - [Experimental Data Files](#experimental-data-files)
 - [Post-Processing & Validation](#post-processing--validation)
+- [Results](#results)
 - [Repository Structure](#repository-structure)
+- [License](#license)
+
+---
+
+## How to Run This Case
+
+1. **Generate geometry**
+```bash
+   python geometry/generate_wing.py
+```
+   Copy the generated surface into `OpenFOAM/constant/triSurface/` (already done for this case).
+
+2. **Preprocess experimental data → probe coordinates**
+```bash
+   python scripts/preprocess/main.py
+```
+
+3. **Write OpenFOAM probe dictionaries**
+```bash
+   python scripts/postprocess/write_probes.py
+```
+
+4. **Run the case**
+```bash
+   openfoam<version>
+   blockMesh
+   surfaceFeatureExtract
+   snappyHexMesh -overwrite
+   decomposePar
+   mpirun -np 8 pimpleFoam -parallel | tee log.pimpleFoam
+   reconstructPar
+```
+
+5. **Sample probes from the solved case**
+```bash
+   # Compute grad(U) field
+   postProcess -func gradU_compute -latestTime
+
+   # Rename grad(U) → gradU  (parentheses break OpenFOAM dict parsing)
+   cp 'OpenFOAM/<latestTime>/grad(U)' 'OpenFOAM/<latestTime>/gradU'
+
+   # Sample all three probe sets
+   postProcess -func probes_v   -latestTime
+   postProcess -func probes_p   -latestTime
+   postProcess -func probes_b11 -latestTime
+```
+
+6. **Parse probe results and run the analysis**
+```bash
+   python scripts/postprocess/parse_results.py
+   python scripts/postprocess/main.py
+```
+
+   This produces `metrics_*.csv`, `core_tracking.csv`, and the comparison plots in `scripts/results/plots/` — see [Results](#results).
 
 ---
 
@@ -225,7 +281,7 @@ postProcess -func probes_b11 -latestTime
 #### Step 3 — Parse results
 
 ```bash
-python scripts/postprocess/parse_probe_results.py
+python scripts/postprocess/parse_results.py
 ```
 
 Reads from `OpenFOAM/postProcessing/` and writes to `scripts/results/`:
@@ -248,6 +304,43 @@ Because the simulation uses k-ω SST (a RANS model), turbulent statistics are de
 | `uv, vw, uw` | `-nut * (∂Ui/∂xj + ∂Uj/∂xi) / U∞²` | Boussinesq eddy-viscosity hypothesis |
 
 The anisotropy of the vortex core measured experimentally will not be reproduced by RANS — this is an expected and documented limitation of the model.
+
+### Stage 3 — Analysis (CFD vs experiment comparison)
+
+`scripts/postprocess/main.py` ties everything together:
+
+1. Loads both the experimental dataframes (`import_exp_data.py`) and the CFD result dataframes (`import_of_data.py`).
+2. Merges them on coordinates (`x_of, y_of, z_of`, rounded to 6 decimals) to produce `merged_b11`, `merged_v`, `merged_p`, each with `_exp` / `_cfd` columns and a `delta_*` column per quantity.
+3. Computes per-plane **RMSE** and **MAE** for every quantity → `metrics_b11.csv`, `metrics_v.csv`, `metrics_p.csv`.
+4. Tracks the **vortex core** per plane (location of minimum `cp_stat`) → `core_tracking.csv`.
+5. Generates comparison plots → `scripts/results/plots/`.
+
+```bash
+python scripts/postprocess/main.py
+```
+
+---
+
+## Results
+
+The CFD reproduces the overall wingtip vortex structure well: the core trajectory (`y/c`, `z/c`) matches the experiment closely across all 10 downstream stations, with positional offsets typically within **1–6% of chord**. The inflow plane (upstream of the wingtip) shows the best agreement across all quantities, as expected for undisturbed freestream flow.
+
+The main discrepancy is **vortex core intensity downstream of roll-up**. The static pressure coefficient at the core (`cp_stat`) diverges progressively with downstream distance — the experiment shows a deepening suction peak reaching `Cp ≈ −3.6` by `x/c ≈ 1.2`, while the RANS (k-ω SST) result plateaus around `Cp ≈ −1.7 to −2.0`. This is the well-documented tendency of linear eddy-viscosity RANS models to **over-diffuse concentrated vortex cores**, flattening the pressure trough and underpredicting peak swirl velocity.
+
+Crossflow velocity components (`v`, `w`) show higher RMSE than the axial component (`u`) at every station — again consistent with RANS smoothing out the rotational velocity field around the core.
+
+### Plots
+
+| Plot | Description |
+|---|---|
+| ![Cp static at core](scripts/results/plots/cp_static_core.png) | **Static pressure coefficient at vortex core vs x/c** — CFD plateaus while experiment shows a deepening suction peak downstream. |
+| ![Core y-location](scripts/results/plots/core_y_location.png) | **Vortex core centerline, y/c vs x/c** — close agreement in vertical core position. |
+| ![Core z-location](scripts/results/plots/core_z_location.png) | **Vortex core centerline, z/c vs x/c** — close agreement in spanwise core position. |
+| ![Velocity magnitude at core](scripts/results/plots/vmag_core.png) | **Velocity magnitude at vortex core vs x/c** — CFD underpredicts the peak swirl/axial velocity excess downstream. |
+
+Full per-plane metrics tables will be available in `scripts/results/metrics_b11.csv`, `metrics_v.csv`, `metrics_p.csv` after running the simulation, and core tracking data in `core_tracking.csv`.
+
+> **Summary:** the simulation correctly captures vortex *location* but underpredicts vortex *strength* downstream — a known limitation of k-ω SST (and RANS models generally) for tip-vortex flows. Improving this would require a Reynolds-stress model, hybrid RANS-LES, or full LES/DES.
 
 ---
 
@@ -290,10 +383,13 @@ naca-wingtip-cfd
 │   │   ├── parse_pv_info.py
 │   │   └── transform_coords.py
 │   ├── postprocess/
+│   │   ├── main.py
+│   │   ├── parse_probe_results.py
 │   │   ├── write_probe_dicts.py
-│   │   └── parse_probe_results.py
+│   │   ├── import_exp_data.py
+│   │   └── import_of_data.py
 │   └── results/                      # Probe coordinates and extracted results
-├── expdata/                          # Experimental reference data
+├── Wingtip_expdata/                  # Experimental reference data
 │   ├── TAKALL.DAT
 │   ├── RETAKALL.DAT
 │   ├── CHORDQPL.DAT
@@ -303,3 +399,10 @@ naca-wingtip-cfd
 └── README.md
 ```
 
+---
+
+## License
+
+The code in this repository (geometry generation, OpenFOAM case setup, and pre-/post-processing scripts) is released under the **MIT License** — see [`LICENSE`](LICENSE).
+
+> **Note:** the experimental dataset in `Wingtip_expdata/` is sourced from the [NASA Turbulence Modeling Resource](https://tmbwg.github.io/turbmodels/Other_exp_Data/wingtip0012_exp.html) (Chow, Zilliac & Bradshaw, 1997) and is **not covered** by this repository's license. Refer to the TMR page for terms of use of the original experimental data.
